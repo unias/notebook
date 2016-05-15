@@ -209,6 +209,7 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
         """Build the common base of a contents model"""
         os_path = self._get_os_path(path)
         info = os.stat(os_path)
+        size = info.st_size
         last_modified = tz.utcfromtimestamp(info.st_mtime)
         created = tz.utcfromtimestamp(info.st_ctime)
         # Create the base model.
@@ -216,6 +217,7 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
         model['name'] = path.rsplit('/', 1)[-1]
         model['path'] = path
         model['last_modified'] = last_modified
+        model['size'] = size
         model['created'] = created
         model['content'] = None
         model['format'] = None

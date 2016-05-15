@@ -438,6 +438,12 @@ define([
             .addClass("item_name")
             .appendTo(link);
 
+		$("<span/>")
+			.addClass("item_size")
+			.addClass("pull-right")
+			.width("50")
+			.appendTo(item);
+
         $("<span/>")
             .addClass("item_modified")
             .addClass("pull-right")
@@ -632,7 +638,8 @@ define([
     NotebookList.prototype.add_link = function (model, item) {
         var path = model.path,
             name = model.name,
-            modified = model.last_modified;
+            modified = model.last_modified,
+			size = model.size;
         var running = (model.type === 'notebook' && this.sessions[path] !== undefined);
 
         item.data('name', name);
@@ -672,8 +679,16 @@ define([
         }
 
         // Add in the date that the file was last modified
-        item.find(".item_modified").text(utils.format_datetime(modified));
+        item.find(".item_modified").text(moment(modified).format("YYYY-MM-DD HH:mm"));
         item.find(".item_modified").attr("title", moment(modified).format("YYYY-MM-DD HH:mm"));
+		var strsize=typeof(size);
+		if(model.type == 'directory') strsize="--";
+		else if(size<1024) strsize=size+" B";
+		else if(size<1048576) strsize=Math.floor(size/1024)+" KB";
+		else if(size<0x40000000) strsize=Math.floor(size/1048576)+" MB";
+		else strsize=Math.floor(size/0x40000000)+" GB";
+		//for (var i=strsize.length;i<=8;i++) strsize+="&nbsp;";
+		item.find(".item_size").text(strsize);
     };
 
 

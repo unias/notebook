@@ -76,7 +76,7 @@ define(function(){
     // tree
     if (!Jupyter.hasOwnProperty('SessionList')) jglobal('SessionList',require('tree/js/sessionlist'), 'tree/js/sessionlist');
 
-    Jupyter.version = "5.0.0.dev";
+    Jupyter.version = "5.1.0.dev";
     Jupyter._target = '_blank';
     return Jupyter;
 });
