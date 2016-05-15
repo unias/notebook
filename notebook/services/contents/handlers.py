@@ -109,7 +109,7 @@ class ContentsHandler(APIHandler):
         """
         path = path or ''
         type = self.get_query_argument('type', default=None)
-        if type not in {None, 'directory', 'file', 'notebook'}:
+        if type not in {None, 'directory', 'file', 'notebook', 'partfile'}:
             raise web.HTTPError(400, u'Type %r is invalid' % type)
 
         format = self.get_query_argument('format', default=None)
@@ -119,9 +119,13 @@ class ContentsHandler(APIHandler):
         if content not in {'0', '1'}:
             raise web.HTTPError(400, u'Content %r is invalid' % content)
         content = int(content)
+        starts = self.get_query_argument('starts', default='0')
+        starts=int(starts)
+        ends=self.get_query_argument('ends', default='100')
+        ends=int(ends)
         
         model = yield gen.maybe_future(self.contents_manager.get(
-            path=path, type=type, format=format, content=content,
+            path=path, type=type, format=format, content=content, starts=starts, ends=ends
         ))
         if model['type'] == 'directory' and content:
             # group listing by type, then by name (case-insensitive)

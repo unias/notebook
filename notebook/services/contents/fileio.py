@@ -10,6 +10,7 @@ import errno
 import io
 import os
 import shutil
+import linecache
 
 from tornado.web import HTTPError
 
@@ -259,7 +260,7 @@ class FileManagerMixin(Configurable):
         with self.atomic_writing(os_path, encoding='utf-8') as f:
             nbformat.write(nb, f, version=nbformat.NO_CONVERT)
 
-    def _read_file(self, os_path, format):
+    def _read_file(self, os_path, format, starts=-1, ends=-1):
         """Read a non-notebook file.
 
         os_path: The path to be read.
@@ -271,6 +272,20 @@ class FileManagerMixin(Configurable):
         if not os.path.isfile(os_path):
             raise HTTPError(400, "Cannot read non-file %s" % os_path)
 
+        if starts >=0:
+            lcontent = linecache.getlines(os_path)[starts:ends]
+            try:
+                bcontent = ''
+                for line in lcontent:
+                    bcontent = bcontent + line
+                return bcontent, 'text'
+            except UnicodeError:
+                raise HTTPError(
+                    400,
+                    "%s is not UTF-8 encoded" % os_path,
+                    reason='bad format',
+                )
+        
         with self.open(os_path, 'rb') as f:
             bcontent = f.read()
 

@@ -271,6 +271,9 @@ class NotebookWebApplication(web.Application):
         handlers.extend(load_handlers('nbconvert.handlers'))
         handlers.extend(load_handlers('kernelspecs.handlers'))
         handlers.extend(load_handlers('edit.handlers'))
+        # Added By Chorch
+        handlers.extend(load_handlers('view.handlers'))
+        # END
         handlers.extend(load_handlers('services.api.handlers'))
         handlers.extend(load_handlers('services.config.handlers'))
         handlers.extend(load_handlers('services.kernels.handlers'))

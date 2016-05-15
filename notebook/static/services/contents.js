@@ -99,6 +99,7 @@ define(function(require) {
         if (options.type) { params.type = options.type; }
         if (options.format) { params.format = options.format; }
         if (options.content === false) { params.content = '0'; }
+        if (options.starts>0) {params.starts=options.starts;params.ends=options.ends;}
         return utils.promising_ajax(url + '?' + $.param(params), settings);
     };
 

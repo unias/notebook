@@ -53,6 +53,7 @@ module.exports = [
     'terminal',
     'tree',
     'notebook',
+    'view',
     _.extend({}, commonConfig, {
         entry: './notebook/static/services/contents.js',
         output: {

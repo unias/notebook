@@ -437,6 +437,10 @@ define([
         $("<span/>")
             .addClass("item_name")
             .appendTo(link);
+        $("<span/>").addClass("vacancy").appendTo(item);
+
+		var view_link=$("<a/>").addClass("item_view_link").appendTo(item);
+		$("<i/>").addClass("item_view_icon").appendTo(view_link);
 
         $("<span/>")
             .addClass("item_modified")
@@ -668,6 +672,9 @@ define([
         // directory nav doesn't open new tabs
         // files, notebooks do
         if (model.type !== "directory") {
+            item.find("span.vacancy").html("&nbsp;&nbsp;");
+            item.find("i.item_view_icon").addClass("fa fa-eye");
+            item.find("a.item_view_link").attr('href',utils.url_path_join(this.base_url,'view',utils.encode_uri_components(path)));
             link.attr('target',IPython._target);
         }
 

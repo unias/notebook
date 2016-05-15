@@ -273,7 +273,7 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
 
         return model
 
-    def _file_model(self, path, content=True, format=None):
+    def _file_model(self, path, content=True, format=None, starts=-1, ends=-1):
         """Build a model for a file
 
         if content is requested, include the file contents.
@@ -290,7 +290,7 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
         model['mimetype'] = mimetypes.guess_type(os_path)[0]
 
         if content:
-            content, format = self._read_file(os_path, format)
+            content, format = self._read_file(os_path, format, starts, ends)
             if model['mimetype'] is None:
                 default_mime = {
                     'text': 'text/plain',
@@ -322,7 +322,7 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
             self.validate_notebook_model(model)
         return model
 
-    def get(self, path, content=True, type=None, format=None):
+    def get(self, path, content=True, type=None, format=None, starts=0, ends=100):
         """ Takes a path for an entity and returns its model
 
         Parameters
@@ -361,7 +361,10 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
             if type == 'directory':
                 raise web.HTTPError(400,
                                 u'%s is not a directory' % path, reason='bad type')
-            model = self._file_model(path, content=content, format=format)
+            elif type == 'partfile':
+                model = self._file_model(path, content=content, format=format, starts=starts, ends=ends)
+            else:
+                model = self._file_model(path, content=content, format=format)
         return model
 
     def _save_directory(self, os_path, model, path=''):
