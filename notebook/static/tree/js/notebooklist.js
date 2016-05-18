@@ -49,7 +49,8 @@ define([
         // 0 => descending, 1 => ascending
         this.sort_state = {
             'last-modified': 0,
-            'sort-name': 0
+            'sort-name': 0,
+			'sort-size': 0
         };
         this._max_upload_size_mb = 25;
     };
@@ -68,6 +69,7 @@ define([
         $('#refresh_' + this.element_name + '_list').click(function () {
             $("#sort-name i").switchClass("fa-arrow-down", "fa-arrow-up");
             $("#last-modified i").switchClass("fa-arrow-down", "fa-arrow-up");
+			$("#sort-size i").switchClass("fa-arrow-down", "fa-arrow-up");
             that.load_sessions();
         });
         this.element.bind('dragover', function () {
@@ -180,7 +182,9 @@ define([
             that.sort_datetime(order);
         } else if (id == 'sort-name') {
             that.sort_name(order);
-        } else {
+        } else if (id == 'sort-size') {
+			that.sort_size(order);
+		} else {
             console.log('id provided to sort_list function is invalid.');
         }
     };
@@ -218,6 +222,27 @@ define([
 
         name_sort_helper($('#notebook_list'), "div.list_item", 'span.item_name');
     };
+
+	NotebookList.prototype.sort_size = function(order) {
+        var size_sort_helper = function(parent, child, selector) {
+            var items = parent.children(child).sort(function(a, b) {
+                var first_size = parseInt($(selector, a).attr("title"));
+                var second_size = parseInt($(selector, b).attr("title"));
+                return (function(a, b, order) {
+                    if (a < b) {
+                        return (order == 1) ? -1 : 1;
+                    } else if (a == b) {
+                        return 0;
+                    } else {
+                        return (order == 1) ? 1 : -1;
+                    }
+                })(first_size, second_size, order);
+            });
+            parent.append(items);
+        };
+
+        size_sort_helper($('#notebook_list'), "div.list_item", 'span.item_size');
+	}
 
     NotebookList.prototype.handleFilesUpload =  function(event, dropOrForm) {
         var that = this;
@@ -441,7 +466,7 @@ define([
 		$("<span/>")
 			.addClass("item_size")
 			.addClass("pull-right")
-			.width("50")
+			.width("60")
 			.appendTo(item);
 
         $("<span/>")
@@ -681,8 +706,9 @@ define([
         // Add in the date that the file was last modified
         item.find(".item_modified").text(moment(modified).format("YYYY-MM-DD HH:mm"));
         item.find(".item_modified").attr("title", moment(modified).format("YYYY-MM-DD HH:mm"));
+		item.find(".item_size").attr("title",size);
 		var strsize=typeof(size);
-		if(model.type == 'directory') strsize="--";
+		if(model.type == 'directory') {strsize="--"; item.find(".item_size").attr("title",-1);}
 		else if(size<1024) strsize=size+" B";
 		else if(size<1048576) strsize=Math.floor(size/1024)+" KB";
 		else if(size<0x40000000) strsize=Math.floor(size/1048576)+" MB";
