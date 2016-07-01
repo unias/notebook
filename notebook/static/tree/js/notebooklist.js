@@ -466,12 +466,13 @@ define([
 		$("<span/>")
 			.addClass("item_size")
 			.addClass("pull-right")
-			.width("60")
+			.width("80")
 			.appendTo(item);
 
         $("<span/>")
             .addClass("item_modified")
             .addClass("pull-right")
+			.width("150")
             .appendTo(item);
 
         if (selectable === false) {
