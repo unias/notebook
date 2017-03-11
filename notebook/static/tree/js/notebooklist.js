@@ -671,12 +671,27 @@ define([
 
         // directory nav doesn't open new tabs
         // files, notebooks do
-        if (model.type !== "directory") {
+
+        /**
+            If this file is a csv file or xsl file, open it with handsontable
+        */
+        if(model.mimetype.endsWith('csv')){
+            var link = item.find("a.item_link")
+            .attr('href',
+                utils.url_path_join(
+                    this.base_url,
+                    'view',
+                    utils.encode_uri_components(path)
+                )
+            );
+        }
+
+        /*if (model.type !== "directory") {
             item.find("span.vacancy").html("&nbsp;&nbsp;");
             item.find("i.item_view_icon").addClass("fa fa-eye");
             item.find("a.item_view_link").attr('href',utils.url_path_join(this.base_url,'view',utils.encode_uri_components(path)));
             link.attr('target',IPython._target);
-        }
+        }*/
 
         // Add in the date that the file was last modified
         item.find(".item_modified").text(utils.format_datetime(modified));

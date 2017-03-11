@@ -322,7 +322,7 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
             self.validate_notebook_model(model)
         return model
 
-    def get(self, path, content=True, type=None, format=None, starts=0, ends=100):
+    def get(self, path, content=True, type=None, format=None, starts=0, ends=1000):
         """ Takes a path for an entity and returns its model
 
         Parameters

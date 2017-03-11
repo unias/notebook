@@ -49,6 +49,13 @@ require([
     utils.load_extensions_from_config(common_config);
     editor.load();
     page.show();
+    $("#confirm_skip").click(function(){
+        var starts = parseInt($("#line_beg").val());
+        starts = starts > 500 ? starts - 500 : 0;
+        var ends = starts + 1000;
+        editor.load(starts, ends);
+        $("#myModal").modal('hide');
+    });
 
 });
 });

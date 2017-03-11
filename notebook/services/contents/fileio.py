@@ -11,6 +11,7 @@ import io
 import os
 import shutil
 import linecache
+import pandas as pd
 
 from tornado.web import HTTPError
 
@@ -29,6 +30,24 @@ try: #PY3
     from base64 import encodebytes, decodebytes
 except ImportError: #PY2
     from base64 import encodestring as encodebytes, decodestring as decodebytes
+
+def get_file_line_no(file_name):
+    file_size = os.path.getsize(file_name)
+    cmd = 'head -n 100 ' + file_name
+    header = os.popen(cmd).read()
+    header_size = len(header) / 100 + 1
+    line_no = file_size / header_size
+    print("line number of %s : %d" % (file_name, line_no))
+    return line_no
+
+def get_lines_skip_rows(file_name, line_beg, line_end):
+    reader = pd.read_csv(file_name, skiprows=line_beg, nrows=line_end - line_beg + 1)
+    data = reader.to_csv().split('\n')
+    for i in range(len(data)):
+        data[i] = data[i][data[i].find(',') + 1 : len(data[i])]
+        data[i] = data[i] + '\n'
+    #print(data)
+    return data
 
 
 def copy2_safe(src, dst, log=None):
@@ -269,15 +288,18 @@ class FileManagerMixin(Configurable):
           If 'base64', the raw bytes contents will be encoded as base64.
           If not specified, try to decode as UTF-8, and fall back to base64
         """
+        print("starts : %d\nends : %d\n" % (starts, ends))
         if not os.path.isfile(os_path):
             raise HTTPError(400, "Cannot read non-file %s" % os_path)
 
         if starts >=0:
-            lcontent = linecache.getlines(os_path)[starts:ends]
+            #lcontent = linecache.getlines(os_path)[starts:ends]
+            lcontent = get_lines_skip_rows(os_path, starts, ends)
             try:
                 bcontent = ''
                 for line in lcontent:
                     bcontent = bcontent + line
+                #print(bcontent)
                 return bcontent, 'text'
             except UnicodeError:
                 raise HTTPError(
@@ -285,7 +307,7 @@ class FileManagerMixin(Configurable):
                     "%s is not UTF-8 encoded" % os_path,
                     reason='bad format',
                 )
-        
+
         with self.open(os_path, 'rb') as f:
             bcontent = f.read()
 
